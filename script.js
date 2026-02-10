@@ -44,14 +44,16 @@ const handalSubmit = (event) => {
 };
 
 function toggleDone(e) {
-  if (!e.target.matches('input[type="checkbox"]')) return;
+  const checkbox = e.target.closest('li')?.querySelector('input[type="checkbox"]');
+  if (!checkbox) return;
 
-  const index = e.target.dataset.index;
+  const index = checkbox.dataset.index;
   items[index].done = !items[index].done;
 
   localStorage.setItem("items", JSON.stringify(items));
   populateList(items, itemsList);
 }
+
 
 addItems.addEventListener("submit", handalSubmit);
 itemsList.addEventListener("click", toggleDone);
