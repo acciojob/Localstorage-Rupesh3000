@@ -3,15 +3,19 @@ const itemsList = document.querySelector(".plates");
 const items = JSON.parse(localStorage.getItem("items")) || [];
 
 function populateList(items = [], itemsList) {
-  if (!items.length) return;
+  if (!items.length) {
+    itemsList.innerHTML = "<li>Loading Storage...</li>";
+    return;
+  }
+
   itemsList.innerHTML = items
     .map((plate, i) => {
       return `
         <li>
-          <input 
-            type="checkbox" 
-            data-index="${i}" 
-            id="item${i}" 
+          <input
+            type="checkbox"
+            data-index="${i}"
+            id="item${i}"
             ${plate.done ? "checked" : ""}
           />
           <label for="item${i}">${plate.text}</label>
@@ -44,7 +48,7 @@ const handalSubmit = (event) => {
 };
 
 function toggleDone(e) {
-  const checkbox = e.target.closest('li')?.querySelector('input[type="checkbox"]');
+  const checkbox = e.target.closest("li")?.querySelector('input[type="checkbox"]');
   if (!checkbox) return;
 
   const index = checkbox.dataset.index;
