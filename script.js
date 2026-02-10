@@ -1,63 +1,55 @@
 const addItems = document.querySelector(".add-items");
 const itemsList = document.querySelector(".plates");
+
+// 🔥 remove placeholder immediately
+itemsList.innerHTML = "";
+
 const items = JSON.parse(localStorage.getItem("items")) || [];
 
 function populateList(items = [], itemsList) {
-  if (!items.length) {
-    itemsList.innerHTML = "<li>Loading Storage...</li>";
-    return;
-  }
+  itemsList.innerHTML = "";
 
-  itemsList.innerHTML = items
-    .map((plate, i) => {
-      return `
-        <li>
-          <input
-            type="checkbox"
-            data-index="${i}"
-            id="item${i}"
-            ${plate.done ? "checked" : ""}
-          />
-          <label for="item${i}">${plate.text}</label>
-        </li>
-      `;
-    })
-    .join("");
+  items.forEach((plate, i) => {
+    itemsList.innerHTML += `
+      <li>
+        <input
+          type="checkbox"
+          data-index="${i}"
+          id="item${i}"
+          ${plate.done ? "checked" : ""}
+        />
+        <label for="item${i}">${plate.text}</label>
+      </li>
+    `;
+  });
 }
 
-// 🔥 render on page load
 populateList(items, itemsList);
 
-const handalSubmit = (event) => {
-  event.preventDefault();
+function handalSubmit(e) {
+  e.preventDefault();
 
-  const form = event.target;
-  const formData = new FormData(form);
-  const itemValue = formData.get("item").trim();
+  const formData = new FormData(e.target);
+  const text = formData.get("item").trim();
 
-  if (!itemValue) return;
+  if (!text) return;
 
-  items.push({
-    text: itemValue,
-    done: false,
-  });
-
+  items.push({ text, done: false });
   localStorage.setItem("items", JSON.stringify(items));
+
   populateList(items, itemsList);
-  form.reset();
-};
+  e.target.reset();
+}
 
 function toggleDone(e) {
-  const checkbox = e.target.closest("li")?.querySelector('input[type="checkbox"]');
-  if (!checkbox) return;
+  if (!e.target.matches("input[type='checkbox']")) return;
 
-  const index = checkbox.dataset.index;
+  const index = e.target.dataset.index;
   items[index].done = !items[index].done;
 
   localStorage.setItem("items", JSON.stringify(items));
   populateList(items, itemsList);
 }
-
 
 addItems.addEventListener("submit", handalSubmit);
 itemsList.addEventListener("click", toggleDone);
