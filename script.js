@@ -1,37 +1,32 @@
 const addItems = document.querySelector(".add-items");
 const itemsList = document.querySelector(".plates");
 
-// 🔥 remove placeholder immediately
+// ALWAYS start with empty list (kills placeholder)
 itemsList.innerHTML = "";
 
 const items = JSON.parse(localStorage.getItem("items")) || [];
 
-function populateList(items = [], itemsList) {
-  itemsList.innerHTML = "";
-
-  items.forEach((plate, i) => {
-    itemsList.innerHTML += `
-      <li>
-        <input
-          type="checkbox"
-          data-index="${i}"
-          id="item${i}"
-          ${plate.done ? "checked" : ""}
-        />
-        <label for="item${i}">${plate.text}</label>
-      </li>
-    `;
-  });
+function populateList(items, platesList) {
+  platesList.innerHTML = items.map((plate, i) => `
+    <li>
+      <input
+        type="checkbox"
+        data-index="${i}"
+        id="item${i}"
+        ${plate.done ? "checked" : ""}
+      />
+      <label for="item${i}">${plate.text}</label>
+    </li>
+  `).join("");
 }
 
+// render on load
 populateList(items, itemsList);
 
-function handalSubmit(e) {
+function handleSubmit(e) {
   e.preventDefault();
 
-  const formData = new FormData(e.target);
-  const text = formData.get("item").trim();
-
+  const text = e.target.item.value.trim();
   if (!text) return;
 
   items.push({ text, done: false });
@@ -51,5 +46,5 @@ function toggleDone(e) {
   populateList(items, itemsList);
 }
 
-addItems.addEventListener("submit", handalSubmit);
+addItems.addEventListener("submit", handleSubmit);
 itemsList.addEventListener("click", toggleDone);
